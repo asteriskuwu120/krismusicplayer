@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Cassette Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .cassette-container {
+            position: relative;
+            width: 400px;
+            height: 250px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 3px solid #333;
+        }
+
+        .cassette-body {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(to bottom, #f5e6d3 0%, #e8d4bd 50%, #d4b59e 100%);
+            border-radius: 8px;
+            position: relative;
+            border: 2px solid #8b6f47;
+            overflow: hidden;
+        }
+
+        .tape-stripe {
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to bottom, 
+                #ff6b35 0%, 
+                #ff8c61 25%, 
+                #ff6b35 50%, 
+                #f94e1e 75%, 
+                #ff6b35 100%);
+            top: 35px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .stripe-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(139, 69, 19, 0.3);
+        }
+
+        .stripe-line:nth-child(1) { top: 7px; }
+        .stripe-line:nth-child(2) { bottom: 7px; }
+
+        .label-area {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            width: 30px;
+            height: 20px;
+            background: #ff6b35;
+            border-radius: 3px;
+            border: 1px solid #d94e1e;
+        }
+
+        .reels-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .reel {
+            width: 60px;
+            height: 60px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #333;
+        }
+
+        .reel-inner {
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #2a2a2a 0%, #1a1a1a 100%);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reel-spokes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotate 2s linear infinite paused;
+        }
+
+        .reel-spokes.playing {
+            animation-play-state: running;
+        }
+
+        .spoke {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: #444;
+            left: 50%;
+            top: 0;
+            transform-origin: center;
+        }
+
+        .spoke:nth-child(1) { transform: rotate(0deg); }
+        .spoke:nth-child(2) { transform: rotate(45deg); }
+        .spoke:nth-child(3) { transform: rotate(90deg); }
+        .spoke:nth-child(4) { transform: rotate(135deg); }
+
+        .reel-center {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #555;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .time-label {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            font-size: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .controls-area {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            color: #ff6b35;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #1a1a1a;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b35, #ff8c61);
+            transition: width 0.1s linear;
+        }
+
+        .track-info {
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1a1a1a;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #ff6b35;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #ff6b35;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .volume-icon {
+            color: #ff6b35;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cassette-container">
+        <div class="cassette-body">
+            <div class="label-area"></div>
+            <div class="tape-stripe">
+                <div class="stripe-line"></div>
+                <div class="stripe-line"></div>
+            </div>
+            <div class="reels-container">
+                <div class="reel">
+                    <div class="reel-inner">
+                        <div class="reel-spokes" id="leftReel">
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                        </div>
+                        <div class="reel-center"></div>
+                    </div>
+                </div>
+                <div class="reel">
+                    <div class="reel-inner">
+                        <div class="reel-spokes" id="rightReel">
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                            <div class="spoke"></div>
+                        </div>
+                        <div class="reel-center"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-label">90 min</div>
+        </div>
+
+        <div class="controls-area">
+            <div class="track-info" id="trackInfo">My Retro Track</div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="time-info">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+
+            <div class="buttons">
+                <button id="prevBtn">⏮</button>
+                <button id="playBtn">▶</button>
+                <button id="nextBtn">⏭</button>
+            </div>
+
+            <div class="volume-control">
+                <span class="volume-icon">🔊</span>
+                <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+            </div>
+        </div>
+
+        <audio id="audio" src=""></audio>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const leftReel = document.getElementById('leftReel');
+        const rightReel = document.getElementById('rightReel');
+        const trackInfo = document.getElementById('trackInfo');
+
+        // 음악 파일 URL을 여기에 추가하세요
+        const playlist = [
+            { title: 'Retro Vibes', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            { title: 'Summer Breeze', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            { title: 'Night Drive', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying = false;
+
+        // 초기 트랙 로드
+        loadTrack(currentTrack);
+
+        function loadTrack(index) {
+            audio.src = playlist[index].src;
+            trackInfo.textContent = playlist[index].title;
+            audio.load();
+        }
+
+        // 재생/일시정지
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.textContent = '▶';
+                leftReel.classList.remove('playing');
+                rightReel.classList.remove('playing');
+            } else {
+                audio.play();
+                playBtn.textContent = '⏸';
+                leftReel.classList.add('playing');
+                rightReel.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // 이전 트랙
+        prevBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                audio.play();
+            }
+        });
+
+        // 다음 트랙
+        nextBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                audio.play();
+            }
+        });
+
+        // 진행 바 업데이트
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = progress + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        // 곡 길이 로드
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        // 진행 바 클릭
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        // 볼륨 조절
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value / 100;
+        });
+
+        // 초기 볼륨 설정
+        audio.volume = 0.7;
+
+        // 곡 끝나면 다음 곡 재생
+        audio.addEventListener('ended', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+            audio.play();
+        });
+
+        // 시간 포맷 함수
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+    </script>
+</body>
+</html>
