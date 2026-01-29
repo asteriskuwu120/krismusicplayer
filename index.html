@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Cassette Player</title>
+    <title>Yacult Tape Player</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Roboto+Mono:wght@500&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -16,319 +18,320 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
+            background: #e8e0d5;
+            font-family: 'Roboto Mono', monospace;
         }
 
+        /* 3D 카세트 본체 스타일 */
         .cassette-container {
             position: relative;
-            width: 400px;
-            height: 250px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border: 3px solid #333;
+            width: 420px;
+            height: 280px;
+            background-color: #f4efe6; /* 크림색 바디 */
+            border-radius: 20px;
+            padding: 15px;
+            /* 입체감을 위한 그림자 */
+            box-shadow: 
+                inset 4px 4px 10px rgba(255,255,255, 0.8),
+                inset -4px -4px 10px rgba(0,0,0, 0.1),
+                15px 15px 30px rgba(0,0,0, 0.15);
+            border: 1px solid #dcd5c5;
         }
 
-        .cassette-body {
+        /* 상단 라벨 디자인 (빨간색 스트라이프) */
+        .cassette-top {
             width: 100%;
-            height: 140px;
-            background: linear-gradient(to bottom, #f5e6d3 0%, #e8d4bd 50%, #d4b59e 100%);
-            border-radius: 8px;
+            height: 160px;
+            background: #e63928; /* Yacult Red */
+            border-radius: 12px 12px 4px 4px;
             position: relative;
-            border: 2px solid #8b6f47;
             overflow: hidden;
+            border: 2px solid #e63928;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .tape-stripe {
+        /* 흰색 스트라이프 패턴 */
+        .stripe-pattern {
             position: absolute;
-            width: 100%;
-            height: 30px;
-            background: linear-gradient(to bottom, 
-                #ff6b35 0%, 
-                #ff8c61 25%, 
-                #ff6b35 50%, 
-                #f94e1e 75%, 
-                #ff6b35 100%);
-            top: 35px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .stripe-line {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: rgba(139, 69, 19, 0.3);
-        }
-
-        .stripe-line:nth-child(1) { top: 7px; }
-        .stripe-line:nth-child(2) { bottom: 7px; }
-
-        .label-area {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            width: 30px;
-            height: 20px;
-            background: #ff6b35;
-            border-radius: 3px;
-            border: 1px solid #d94e1e;
-        }
-
-        .reels-container {
-            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.2) 10px,
+                rgba(255,255,255,0.2) 20px
+            );
+        }
+
+        .brand-text {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            color: #fff;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+
+        .side-mark {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            background: #fff;
+            color: #e63928;
+            padding: 2px 8px;
+            font-weight: bold;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 18px;
+            border-radius: 4px;
+        }
+
+        /* 릴이 돌아가는 검은색 창 */
+        .tape-window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            height: 80px;
+            background: #111;
+            border-radius: 40px;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
+            padding: 0 25px;
+            border: 4px solid #f4efe6;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            z-index: 5;
+        }
+
+        /* 투명 창 효과 */
+        .tape-window::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 100%);
+            border-radius: 36px;
+            pointer-events: none;
         }
 
         .reel {
-            width: 60px;
-            height: 60px;
-            background: #1a1a1a;
+            width: 55px;
+            height: 55px;
+            background: #f4efe6;
             border-radius: 50%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 3px solid #333;
-        }
-
-        .reel-inner {
-            width: 45px;
-            height: 45px;
-            background: radial-gradient(circle, #2a2a2a 0%, #1a1a1a 100%);
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         .reel-spokes {
-            position: absolute;
             width: 100%;
             height: 100%;
-            animation: rotate 2s linear infinite paused;
+            position: absolute;
+            animation: rotate 3s linear infinite paused;
         }
-
+        
         .reel-spokes.playing {
             animation-play-state: running;
         }
 
         .spoke {
             position: absolute;
-            width: 2px;
-            height: 100%;
-            background: #444;
-            left: 50%;
-            top: 0;
-            transform-origin: center;
-        }
-
-        .spoke:nth-child(1) { transform: rotate(0deg); }
-        .spoke:nth-child(2) { transform: rotate(45deg); }
-        .spoke:nth-child(3) { transform: rotate(90deg); }
-        .spoke:nth-child(4) { transform: rotate(135deg); }
-
-        .reel-center {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: #555;
-            border-radius: 50%;
+            width: 8px;
+            height: 20px;
+            background: #111;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform-origin: center top;
+            border-radius: 2px;
         }
+        
+        .spoke:nth-child(1) { transform: translate(-50%, 0) rotate(0deg) translateY(-18px); }
+        .spoke:nth-child(2) { transform: translate(-50%, 0) rotate(120deg) translateY(-18px); }
+        .spoke:nth-child(3) { transform: translate(-50%, 0) rotate(240deg) translateY(-18px); }
 
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        .time-label {
-            position: absolute;
-            bottom: 15px;
-            left: 20px;
-            font-size: 10px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .controls-area {
-            margin-top: 20px;
+        /* 하단 컨트롤 영역 (그리드 배경) */
+        .cassette-bottom {
+            margin-top: 15px;
+            height: 85px;
+            background-color: #e8e0d5;
+            background-image: 
+                linear-gradient(#dcb 1px, transparent 1px),
+                linear-gradient(90deg, #dcb 1px, transparent 1px);
+            background-size: 10px 10px;
+            border-radius: 8px;
+            border: 2px solid #dcd5c5;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            justify-content: center;
+            position: relative;
+            /* 구멍 뚫린 느낌 */
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
         }
 
-        .buttons {
+        .track-display {
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .controls-row {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .btn-group {
+            display: flex;
             gap: 10px;
         }
 
         button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 35px;
+            height: 35px;
             border: none;
-            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-            color: #ff6b35;
-            font-size: 20px;
+            border-radius: 50%;
+            background: #e63928;
+            color: white;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        button:hover {
-            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
         }
 
         button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
         }
 
-        .progress-container {
+        /* 진행 바 스타일 */
+        .progress-wrapper {
             width: 100%;
             height: 6px;
-            background: #1a1a1a;
+            background: #ccc;
             border-radius: 3px;
-            overflow: hidden;
+            margin-bottom: 8px;
             cursor: pointer;
+            position: relative;
         }
 
-        .progress-bar {
+        .progress-fill {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #ff6b35, #ff8c61);
-            transition: width 0.1s linear;
+            background: #e63928;
+            border-radius: 3px;
         }
 
-        .track-info {
-            text-align: center;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 5px;
+        .volume-wrapper input {
+            width: 60px;
+            accent-color: #e63928;
         }
 
-        .time-info {
-            display: flex;
-            justify-content: space-between;
-            color: #aaa;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .volume-slider {
-            width: 100px;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #1a1a1a;
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            background: #ff6b35;
+        /* 장식용 나사 */
+        .screw {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ccc;
             border-radius: 50%;
-            cursor: pointer;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
         }
+        .screw::after { /* 십자 나사 모양 */
+            content: '+';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -55%);
+            color: #888;
+            font-size: 10px;
+        }
+        .screw.tl { top: 10px; left: 10px; }
+        .screw.tr { top: 10px; right: 10px; }
+        .screw.bl { bottom: 10px; left: 10px; }
+        .screw.br { bottom: 10px; right: 10px; }
 
-        .volume-slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            background: #ff6b35;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
-
-        .volume-icon {
-            color: #ff6b35;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
+
     <div class="cassette-container">
-        <div class="cassette-body">
-            <div class="label-area"></div>
-            <div class="tape-stripe">
-                <div class="stripe-line"></div>
-                <div class="stripe-line"></div>
-            </div>
-            <div class="reels-container">
+        <!-- 장식용 나사 -->
+        <div class="screw tl"></div>
+        <div class="screw tr"></div>
+        <div class="screw bl"></div>
+        <div class="screw br"></div>
+
+        <div class="cassette-top">
+            <div class="stripe-pattern"></div>
+            <div class="brand-text">YACULT 8000</div>
+            
+            <div class="tape-window">
                 <div class="reel">
-                    <div class="reel-inner">
-                        <div class="reel-spokes" id="leftReel">
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                        </div>
-                        <div class="reel-center"></div>
+                    <div class="reel-spokes" id="leftReel">
+                        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
                     </div>
                 </div>
+                <!-- 가운데 연결부 -->
+                <div style="width: 60px; height: 30px; background: #222; border-radius: 4px;"></div>
                 <div class="reel">
-                    <div class="reel-inner">
-                        <div class="reel-spokes" id="rightReel">
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                            <div class="spoke"></div>
-                        </div>
-                        <div class="reel-center"></div>
+                    <div class="reel-spokes" id="rightReel">
+                        <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
                     </div>
                 </div>
             </div>
-            <div class="time-label">90 min</div>
+
+            <div class="side-mark">A</div>
         </div>
 
-        <div class="controls-area">
-            <div class="track-info" id="trackInfo">My Retro Track</div>
-            
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            
-            <div class="time-info">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
+        <div class="cassette-bottom">
+            <div class="progress-wrapper" id="progressContainer">
+                <div class="progress-fill" id="progressBar"></div>
             </div>
 
-            <div class="buttons">
-                <button id="prevBtn">⏮</button>
-                <button id="playBtn">▶</button>
-                <button id="nextBtn">⏭</button>
-            </div>
+            <div class="track-display" id="trackInfo">Ready to Play</div>
 
-            <div class="volume-control">
-                <span class="volume-icon">🔊</span>
-                <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+            <div class="controls-row">
+                <div class="volume-wrapper">
+                    <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                </div>
+                
+                <div class="btn-group">
+                    <button id="prevBtn">⏮</button>
+                    <button id="playBtn">▶</button>
+                    <button id="nextBtn">⏭</button>
+                </div>
             </div>
         </div>
-
-        <audio id="audio" src=""></audio>
     </div>
+
+    <audio id="audio"></audio>
 
     <script>
         const audio = document.getElementById('audio');
@@ -337,79 +340,68 @@
         const nextBtn = document.getElementById('nextBtn');
         const progressBar = document.getElementById('progressBar');
         const progressContainer = document.getElementById('progressContainer');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
         const volumeSlider = document.getElementById('volumeSlider');
         const leftReel = document.getElementById('leftReel');
         const rightReel = document.getElementById('rightReel');
         const trackInfo = document.getElementById('trackInfo');
 
-        // 음악 파일 URL을 여기에 추가하세요
+        // [중요] 유튜브 링크는 여기서 작동하지 않습니다. 
+        // 직접 소유한 mp3 파일 주소나, mp3 호스팅 URL을 넣어야 합니다.
+        // 테스트를 위해 작동하는 mp3 링크로 교체했습니다.
         const playlist = [
-            { title: 'Sk8er boi', src: 'https://www.youtube.com/watch?v=TIy3n2b7V9k' },
-            { title: 'Girlfriend', src: 'https://www.youtube.com/watch?v=Bg59q4puhmg&list=RDBg59q4puhmg&start_radio=1' },
-            { title: 'American Idiot', src: 'https://www.youtube.com/watch?v=Ee_uujKuJMI&list=RDEe_uujKuJMI&start_radio=1' }
+            { title: 'Sk8er Boi (Cover/Demo)', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            { title: 'Girlfriend (Cover/Demo)', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            { title: 'American Idiot (Cover/Demo)', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
         ];
 
         let currentTrack = 0;
         let isPlaying = false;
 
-        // 초기 트랙 로드
-        loadTrack(currentTrack);
-
         function loadTrack(index) {
             audio.src = playlist[index].src;
-            trackInfo.textContent = playlist[index].title;
+            trackInfo.textContent = `${index + 1}. ${playlist[index].title}`;
             audio.load();
         }
 
-        // 재생/일시정지
-        playBtn.addEventListener('click', () => {
+        // 초기화
+        loadTrack(currentTrack);
+
+        function togglePlay() {
             if (isPlaying) {
                 audio.pause();
                 playBtn.textContent = '▶';
                 leftReel.classList.remove('playing');
                 rightReel.classList.remove('playing');
             } else {
-                audio.play();
+                audio.play().catch(e => alert("재생 오류: 음악 파일 링크를 확인해주세요."));
                 playBtn.textContent = '⏸';
                 leftReel.classList.add('playing');
                 rightReel.classList.add('playing');
             }
             isPlaying = !isPlaying;
-        });
+        }
 
-        // 이전 트랙
+        playBtn.addEventListener('click', togglePlay);
+
         prevBtn.addEventListener('click', () => {
             currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrack);
-            if (isPlaying) {
-                audio.play();
-            }
+            if(isPlaying) audio.play();
         });
 
-        // 다음 트랙
         nextBtn.addEventListener('click', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             loadTrack(currentTrack);
-            if (isPlaying) {
-                audio.play();
+            if(isPlaying) audio.play();
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if(audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
             }
         });
 
-        // 진행 바 업데이트
-        audio.addEventListener('timeupdate', () => {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = progress + '%';
-            currentTimeEl.textContent = formatTime(audio.currentTime);
-        });
-
-        // 곡 길이 로드
-        audio.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audio.duration);
-        });
-
-        // 진행 바 클릭
         progressContainer.addEventListener('click', (e) => {
             const width = progressContainer.clientWidth;
             const clickX = e.offsetX;
@@ -417,28 +409,15 @@
             audio.currentTime = (clickX / width) * duration;
         });
 
-        // 볼륨 조절
         volumeSlider.addEventListener('input', (e) => {
             audio.volume = e.target.value / 100;
         });
 
-        // 초기 볼륨 설정
-        audio.volume = 0.7;
-
-        // 곡 끝나면 다음 곡 재생
         audio.addEventListener('ended', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             loadTrack(currentTrack);
             audio.play();
         });
-
-        // 시간 포맷 함수
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
     </script>
 </body>
 </html>
